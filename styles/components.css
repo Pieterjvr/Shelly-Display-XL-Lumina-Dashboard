@@ -1,0 +1,424 @@
+/* --- Weather Forecast Box --- */
+.weather-forecast {
+    display: flex;
+    gap: var(--spacing-lg);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    border-radius: var(--border-radius);
+}
+
+.weather-day {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1rem;
+}
+
+.weather-day .mdi {
+    font-size: 1.5rem;
+    color: var(--accent-hover);
+}
+
+.weather-day .temp {
+    font-weight: 600;
+}
+
+.weather-day .day {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* --- Lumina Energy Graphic --- */
+.lumina-card {
+    flex: 1; /* Take up available vertical space */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 0;
+    min-height: 0;
+}
+
+.lumina-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    height: 350px;
+}
+
+.flow-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.flow-path {
+    fill: none;
+    stroke: #00f0ff;
+    stroke-width: 0.5;
+}
+
+/* Animated flow lines */
+.flow-path.active {
+    stroke-dasharray: 8 12;
+    animation: flowAnim 1s linear infinite;
+}
+
+/* Reverse flow direction */
+.flow-path.active.reverse {
+    animation: flowAnimReverse 1s linear infinite;
+}
+
+.flow-path.solar-active { stroke: var(--solar-color); }
+.flow-path.grid-active { stroke: var(--grid-color); }
+.flow-path.battery-active { stroke: var(--battery-color); }
+
+@keyframes flowAnim {
+    from { stroke-dashoffset: 20; }
+    to { stroke-dashoffset: 0; }
+}
+@keyframes flowAnimReverse {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: 20; }
+}
+
+/* 3D Isometric Mode */
+.lumina-wrapper.3d-mode {
+    width: 100%;
+    max-width: none;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    background-size: cover;
+    background-position: center 80%;
+    border-radius: var(--border-radius);
+    position: relative;
+}
+
+/* Floating Data Boxes (Neon Cyan Style) */
+.floating-box {
+    position: absolute;
+    background: rgba(0, 20, 30, 0.7);
+    border: 2px solid #00f0ff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #00f0ff;
+    font-size: 0.85rem;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3), inset 0 0 10px rgba(0, 240, 255, 0.1);
+    backdrop-filter: blur(5px);
+    z-index: 10;
+    min-width: 150px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.floating-box .box-title {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 4px;
+    border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+    padding-bottom: 4px;
+}
+
+.floating-box .box-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.floating-box .highlight {
+    font-size: 1.2rem;
+    font-weight: bold;
+    text-shadow: 0 0 5px #00f0ff;
+}
+
+/* Specific Positions (Using Percentages for Responsive Scaling) */
+.solar-box { top: 10%; left: 5%; }
+.grid-box { top: 10%; left: 35%; }
+.battery-box { bottom: 15%; left: 15%; }
+.battery-box .box-title { font-size: 1.5rem; text-align: center; border: none; }
+.house-box { top: 50%; right: 5%; color: white; box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
+.house-box .box-title { border-color: rgba(0, 240, 255, 0.3); }
+
+/* --- Quick Access Tiles --- */
+.quick-access-card {
+    grid-column: span 12;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+}
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+}
+
+.quick-tile {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    display: flex;
+    flex-direction: row; /* Horizontal layout for info within vertical button */
+    align-items: center;
+    gap: 20px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    width: 100%;
+}
+
+.quick-tile:hover {
+    background: var(--glass-highlight);
+    transform: translateX(-8px); /* Slide left on hover */
+    border-color: var(--accent-color);
+    box-shadow: 0 12px 30px rgba(59, 130, 246, 0.3);
+}
+
+.tile-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.tile-icon { font-size: 2.5rem; filter: drop-shadow(0 0 12px rgba(0,0,0,0.5)); }
+.tile-name { font-weight: 600; font-size: 1.3rem; letter-spacing: 0.5px; }
+.tile-state { font-size: 1rem; color: var(--text-secondary); opacity: 0.9; }
+
+/* Color utilities */
+.text-amber { color: #fbbf24; }
+.text-red { color: #ef4444; }
+.text-blue { color: #3b82f6; }
+.text-green { color: #10b981; }
+
+/* --- Subviews --- */
+.room-group {
+    margin-bottom: var(--spacing-xl);
+}
+
+.room-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: var(--spacing-sm);
+    border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 4px;
+}
+
+/* Entity controls */
+.entity-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px 16px;
+    border-radius: var(--border-radius);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 12px;
+    min-width: 160px;
+}
+
+.entity-card:hover {
+    background: var(--glass-highlight);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.entity-info {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+}
+
+.icon-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.entity-icon {
+    font-size: 1.3rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+/* On State Styling */
+.entity-card.state-on .icon-container {
+    background: rgba(251, 191, 36, 0.2); /* Gold background */
+}
+
+.entity-card.state-on .entity-icon {
+    color: #fbbf24; /* Gold icon */
+    text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+}
+
+.entity-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.entity-name-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.entity-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+
+.brightness-percent {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 6px;
+    display: none;
+}
+
+.entity-card.state-on .brightness-percent {
+    display: block;
+    color: #fbbf24;
+    background: rgba(251, 191, 36, 0.1);
+}
+
+.entity-state {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* Dimmer Slider Styling (Mushroom Style) */
+.entity-controls {
+    width: 100%;
+    margin-top: 8px;
+}
+
+.brightness-slider-container {
+    width: 100%;
+    height: 32px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+    display: none; /* Hidden by default */
+}
+
+.entity-card.state-on .brightness-slider-container {
+    display: block;
+}
+
+.brightness-slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    margin: 0;
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
+.brightness-slider::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 100%;
+    background: transparent;
+}
+
+.brightness-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 32px; /* Large handle */
+    height: 32px;
+    background: #fbbf24;
+    border-radius: 6px;
+    border: 3px solid rgba(0,0,0,0.2);
+    box-shadow: -400px 0 0 400px #fbbf24; /* Fill effect */
+    cursor: pointer;
+}
+
+/* Remove old toggle styles */
+.toggle-switch { display: none; }
+
+/* --- Alarm Panel --- */
+.alarm-panels-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-lg);
+}
+
+.alarm-panel {
+    flex: 1;
+    min-width: 300px;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.alarm-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.alarm-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.alarm-status.disarmed { color: var(--success-color); }
+.alarm-status.armed { color: var(--danger-color); }
+
+.alarm-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+}
+
+.alarm-btn {
+    padding: 15px;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: white;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.alarm-btn:hover { background: var(--glass-highlight); }
+.alarm-btn .mdi { font-size: 1.8rem; }
+.alarm-btn.arm-away { color: var(--warning-color); border-color: rgba(245, 158, 11, 0.3); }
+.alarm-btn.disarm { color: var(--success-color); border-color: rgba(16, 185, 129, 0.3); grid-column: span 2; }

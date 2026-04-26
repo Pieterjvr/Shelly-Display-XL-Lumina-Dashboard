@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Home Assistant Dashboard</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/layout.css">
+    <link rel="stylesheet" href="styles/components.css">
+</head>
+
+<body class="dark-theme">
+    <div id="app-container">
+
+        <!-- Sidebar removed -->
+
+        <main id="main-content">
+
+            <!-- Energy / Home View -->
+            <section id="energy-view" class="view-section active">
+                <header class="view-header">
+                    <div class="weather-forecast glass-panel" id="weather-box">
+                        <div class="weather-day">
+                            <span class="mdi mdi-weather-partly-cloudy"></span>
+                            <span class="temp">24°</span>
+                            <span class="day">Today</span>
+                        </div>
+                        <div class="weather-day">
+                            <span class="mdi mdi-weather-sunny"></span>
+                            <span class="temp">26°</span>
+                            <span class="day">Tomorrow</span>
+                        </div>
+                        <div class="weather-day">
+                            <span class="mdi mdi-weather-pouring"></span>
+                            <span class="temp">18°</span>
+                            <span class="day">Friday</span>
+                        </div>
+                    </div>
+                    <div class="time-display" id="clock">--:--</div>
+                </header>
+
+                <div class="energy-dashboard-grid side-by-side">
+
+                    <!-- Lumina 3D Isometric Energy Graphic (Left) -->
+                    <div class="card glass-panel lumina-card-container">
+                        <lumina-energy-card id="lumina-card"></lumina-energy-card>
+                    </div>
+
+                    <!-- Quick Access Tiles (Right, Vertical) -->
+                    <div class="quick-access-sidebar" id="quick-tiles-container">
+                        <!-- Generated via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- SUBVIEWS -->
+
+            <!-- Lights View -->
+            <section id="lights-view" class="view-section hidden">
+                <header class="view-header">
+                    <button class="back-btn glass-btn" data-back="energy-view"><span class="mdi mdi-arrow-left"></span>
+                        Back</button>
+                    <h1>Light View</h1>
+                </header>
+
+                <div class="room-group">
+                    <h2 class="room-heading"><span class="mdi mdi-liquor"></span> Bar Room</h2>
+                    <div class="entities-grid" id="lights-bar-container"></div>
+                </div>
+
+                <div class="room-group">
+                    <h2 class="room-heading"><span class="mdi mdi-grill"></span> Lapa Outside</h2>
+                    <div class="entities-grid" id="lights-lapa-container"></div>
+                </div>
+
+                <div class="room-group">
+                    <h2 class="room-heading"><span class="mdi mdi-pool"></span> Pool</h2>
+                    <div class="entities-grid" id="lights-pool-container"></div>
+                </div>
+
+                <div class="room-group">
+                    <h2 class="room-heading"><span class="mdi mdi-shower"></span> Bath Rooms</h2>
+                    <div class="entities-grid" id="lights-bathroom-container"></div>
+                </div>
+            </section>
+
+            <!-- Alarm Panel View -->
+            <section id="alarm-view" class="view-section hidden">
+                <header class="view-header">
+                    <button class="back-btn glass-btn" data-back="energy-view"><span class="mdi mdi-arrow-left"></span>
+                        Back</button>
+                    <h1>Alarm System</h1>
+                </header>
+                <div class="alarm-panels-container" id="alarms-container">
+                    <!-- Modern Alarm UI generated via JS -->
+                </div>
+            </section>
+
+            <!-- Pool View -->
+            <section id="pool-view" class="view-section hidden">
+                <header class="view-header">
+                    <button class="back-btn glass-btn" data-back="energy-view"><span class="mdi mdi-arrow-left"></span>
+                        Back</button>
+                    <h1>Pool View</h1>
+                </header>
+                <div class="entities-grid" id="pool-entities-container"></div>
+            </section>
+
+            <!-- Geyser View -->
+            <section id="geyser-view" class="view-section hidden">
+                <header class="view-header">
+                    <button class="back-btn glass-btn" data-back="energy-view"><span class="mdi mdi-arrow-left"></span>
+                        Back</button>
+                    <h1>Geyser View</h1>
+                </header>
+                <div class="entities-grid" id="geyser-entities-container"></div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="scripts/lumina-card.js"></script>
+    <script src="scripts/ha-api.js"></script>
+    <script src="scripts/ui.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+
+</html>
