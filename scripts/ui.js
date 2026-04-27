@@ -3,7 +3,7 @@ class UI {
         this.ha = haApi;
         
         // Use global CONFIG or fallback to empty structure
-        this.config = window.CONFIG?.ENTITIES || {
+        this.config = (window.CONFIG && window.CONFIG.ENTITIES) || {
             lights: {},
             pool: [],
             geyser: [],
@@ -232,7 +232,7 @@ class UI {
     
     // Custom name overrides for the UI
     getFriendlyName(id) {
-        if (window.CONFIG?.NAMES && window.CONFIG.NAMES[id]) {
+        if ((window.CONFIG && window.CONFIG.NAMES) && window.CONFIG.NAMES[id]) {
             return window.CONFIG.NAMES[id];
         }
         const names = {
@@ -251,7 +251,7 @@ class UI {
     }
 
     getEntityIcon(id) {
-        if (window.CONFIG?.ICONS && window.CONFIG.ICONS[id]) {
+        if ((window.CONFIG && window.CONFIG.ICONS) && window.CONFIG.ICONS[id]) {
             return window.CONFIG.ICONS[id];
         }
         const icons = {
@@ -455,7 +455,7 @@ class UI {
         if (weatherEntity) {
             try {
                 const currentTemp = Math.round(weatherEntity.attributes.temperature || 0);
-                const summary = summaryEntity?.state || '';
+                const summary = (summaryEntity && summaryEntity.state) || '';
 
                 let html = `
                     <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -466,7 +466,7 @@ class UI {
                         <div class="weather-right" style="display: flex; gap: 10px;">
                 `;
 
-                const forecast = forecastSensor?.attributes?.forecast || weatherEntity.attributes?.forecast || [];
+                const forecast = (forecastSensor && forecastSensor.attributes && forecastSensor.attributes.forecast) || (weatherEntity.attributes && weatherEntity.attributes.forecast) || [];
                 if (forecast.length > 0) {
                     const daysToAdd = forecast.slice(0, 3); // Today, Tomorrow, Day After
                     daysToAdd.forEach((day, index) => {
@@ -536,8 +536,8 @@ class UI {
 
             // Dual-Color Grid-to-Battery Flow Logic
             const energyConfig = this.config.ENERGY || {};
-            const batteryCharge = parseFloat(entities[energyConfig.battery_charge]?.state || 0);
-            const gridFlow = parseFloat(entities[energyConfig.grid_power]?.state || 0);
+            const batteryCharge = parseFloat((entities[energyConfig.battery_charge] && entities[energyConfig.battery_charge].state) || 0);
+            const gridFlow = parseFloat((entities[energyConfig.grid_power] && entities[energyConfig.grid_power].state) || 0);
             
             // Logic: Battery is CHARGING (>0) AND Grid is IMPORTING (<0)
             const isGridChargingBattery = (batteryCharge > 10) && (gridFlow < -10);
@@ -570,11 +570,11 @@ class UI {
         const solarDailyEl = document.getElementById('solar-daily');
         
         if (solarCurrentEl) {
-            const solarVal = parseFloat(entities[energyConfig.solar_total]?.state || 0);
+            const solarVal = parseFloat((entities[energyConfig.solar_total] && entities[energyConfig.solar_total].state) || 0);
             solarCurrentEl.textContent = `${(solarVal / 1000).toFixed(2)} kW`;
         }
         if (solarDailyEl) {
-            const dailyVal = entities[energyConfig.solar_daily]?.state || 0;
+            const dailyVal = (entities[energyConfig.solar_daily] && entities[energyConfig.solar_daily].state) || 0;
             solarDailyEl.textContent = `${parseFloat(dailyVal).toFixed(2)} kWh`;
         }
 
@@ -589,11 +589,11 @@ class UI {
         const batteryCapacityStoredEl = document.getElementById('battery-capacity-stored');
 
         if (batterySocEl && batteryRateEl && batteryRemainingEl && batteryRow4El && batteryRow3El) {
-            const socVal = parseFloat(entities[energyConfig.battery_soc]?.state || 0);
+            const socVal = parseFloat((entities[energyConfig.battery_soc] && entities[energyConfig.battery_soc].state) || 0);
             
-            const flowVal = parseFloat(entities[energyConfig.battery_flow]?.state || 0); // Negative = Discharging, Positive = Charging
-            const dischargeVal = parseFloat(entities[energyConfig.battery_discharge]?.state || 0); // Positive W
-            const chargeVal = parseFloat(entities[energyConfig.battery_charge]?.state || 0); // Positive W
+            const flowVal = parseFloat((entities[energyConfig.battery_flow] && entities[energyConfig.battery_flow].state) || 0); // Negative = Discharging, Positive = Charging
+            const dischargeVal = parseFloat((entities[energyConfig.battery_discharge] && entities[energyConfig.battery_discharge].state) || 0); // Positive W
+            const chargeVal = parseFloat((entities[energyConfig.battery_charge] && entities[energyConfig.battery_charge].state) || 0); // Positive W
             
             const isDischarging = flowVal < -10 || dischargeVal > 10;
             const isCharging = flowVal > 10 || chargeVal > 10;
@@ -635,7 +635,7 @@ class UI {
             }
 
             // Calculation Logic (Sunsynk Style)
-            const capKwh = window.CONFIG?.BATTERY_CAPACITY_KWH || 14;
+            const capKwh = (window.CONFIG && window.CONFIG.BATTERY_CAPACITY_KWH) || 14;
             
             if (batteryCapacityStoredEl) {
                 const currentStoredKwh = (socVal / 100) * capKwh;
@@ -643,11 +643,11 @@ class UI {
             }
 
             // Grid Check
-            const gridVoltage = parseFloat(entities[energyConfig.grid_voltage]?.state || 0);
+            const gridVoltage = parseFloat((entities[energyConfig.grid_voltage] && entities[energyConfig.grid_voltage].state) || 0);
             const isGridLive = gridVoltage > 200;
             
-            const targetOn = parseFloat(entities['number.lux_on_grid_discharge_cut_off_soc']?.state) || this.config.SOC_ON_GRID_TARGET || 50;
-            const targetOff = parseFloat(entities['number.lux_off_grid_discharge_cut_off_soc']?.state) || this.config.SOC_OFF_GRID_TARGET || 30;
+            const targetOn = parseFloat((entities['number.lux_on_grid_discharge_cut_off_soc'] && entities['number.lux_on_grid_discharge_cut_off_soc'].state)) || this.config.SOC_ON_GRID_TARGET || 50;
+            const targetOff = parseFloat((entities['number.lux_off_grid_discharge_cut_off_soc'] && entities['number.lux_off_grid_discharge_cut_off_soc'].state)) || this.config.SOC_OFF_GRID_TARGET || 30;
             const targetSoc = isGridLive ? targetOn : targetOff;
             
             const targetOnEl = document.getElementById('battery-target-on');

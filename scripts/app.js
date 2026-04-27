@@ -1,3 +1,27 @@
+function scaleDashboard() {
+    const wrapper = document.getElementById('dashboard-wrapper');
+    if (!wrapper) return;
+    
+    const scaleX = window.innerWidth / 1280;
+    const scaleY = window.innerHeight / 752;
+    const scale = Math.min(scaleX, scaleY);
+    
+    wrapper.style.transform = 'scale(' + scale + ')';
+    
+    // Center it horizontally and vertically
+    const scaledWidth = 1280 * scale;
+    const scaledHeight = 752 * scale;
+    
+    const offsetX = (window.innerWidth - scaledWidth) / 2;
+    const offsetY = (window.innerHeight - scaledHeight) / 2;
+    
+    wrapper.style.left = offsetX + 'px';
+    wrapper.style.top = offsetY + 'px';
+}
+
+window.addEventListener('load', scaleDashboard);
+window.addEventListener('resize', scaleDashboard);
+
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize UI
     const ui = new UI(window.ha);

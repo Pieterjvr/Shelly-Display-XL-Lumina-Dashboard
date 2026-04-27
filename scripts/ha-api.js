@@ -10,62 +10,66 @@ class HomeAssistantAPI {
     async connect() {
         console.log("Connecting to Home Assistant...");
         
-        const haUrl = window.CONFIG?.HA_URL || 'http://homeassistant.local:8123';
-        const haToken = window.CONFIG?.HA_TOKEN;
+        const haUrl = (window.CONFIG && window.CONFIG.HA_URL) || 'http://homeassistant.local:8123';
+        const haToken = window.CONFIG && window.CONFIG.HA_TOKEN;
 
         if (haToken && haToken !== "YOUR_LONG_LIVED_ACCESS_TOKEN_HERE") {
             const wsUrl = haUrl.replace(/^http/, 'ws') + '/api/websocket';
             console.log("HA Token found, connecting to WS:", wsUrl);
             
-            this.ws = new WebSocket(wsUrl);
+            try {
+                this.ws = new WebSocket(wsUrl);
 
-            this.ws.onmessage = (event) => {
-                const data = JSON.parse(event.data);
+                this.ws.onmessage = (event) => {
+                    const data = JSON.parse(event.data);
+                    
+                    if (data.type === 'auth_required') {
+                        this.ws.send(JSON.stringify({ type: 'auth', access_token: haToken }));
+                    } else if (data.type === 'auth_ok') {
+                        console.log("HA WebSocket Auth OK");
+                        this.isConnected = true;
+                        // Get initial states
+                        this.ws.send(JSON.stringify({ id: this.msgId++, type: 'get_states' }));
+                        // Subscribe to state changes
+                        this.ws.send(JSON.stringify({ id: this.msgId++, type: 'subscribe_events', event_type: 'state_changed' }));
+                    } else if (data.type === 'auth_invalid') {
+                        console.error("HA WebSocket Auth Invalid");
+                    } else if (data.type === 'result') {
+                        // Initial states fallback (if get_states was id: 1)
+                        if (data.id === 1 && Array.isArray(data.result)) {
+                            const newEntities = {};
+                            data.result.forEach(entity => {
+                                newEntities[entity.entity_id] = entity;
+                            });
+                            this.entities = newEntities;
+                            console.log("Initial states loaded.");
+                            this.notifyListeners();
+                        }
+                    } else if (data.type === 'event' && data.event.event_type === 'state_changed') {
+                        const entity_id = data.event.data.entity_id;
+                        const new_state = data.event.data.new_state;
+                        if (new_state) {
+                            // Create a new reference of entities to trigger standard HA Custom Card renders
+                            this.entities = {
+                                ...this.entities,
+                                [entity_id]: new_state
+                            };
+                            // Real-time UI update
+                            this.notifyListeners();
+                        }
+                    }
+                };
+
+                this.ws.onclose = () => {
+                    console.log("HA WebSocket Disconnected. Reconnecting in 5s...");
+                    this.isConnected = false;
+                    setTimeout(() => this.connect(), 5000);
+                };
                 
-                if (data.type === 'auth_required') {
-                    this.ws.send(JSON.stringify({ type: 'auth', access_token: haToken }));
-                } else if (data.type === 'auth_ok') {
-                    console.log("HA WebSocket Auth OK");
-                    this.isConnected = true;
-                    // Get initial states
-                    this.ws.send(JSON.stringify({ id: this.msgId++, type: 'get_states' }));
-                    // Subscribe to state changes
-                    this.ws.send(JSON.stringify({ id: this.msgId++, type: 'subscribe_events', event_type: 'state_changed' }));
-                } else if (data.type === 'auth_invalid') {
-                    console.error("HA WebSocket Auth Invalid");
-                } else if (data.type === 'result') {
-                    // Initial states fallback (if get_states was id: 1)
-                    if (data.id === 1 && Array.isArray(data.result)) {
-                        const newEntities = {};
-                        data.result.forEach(entity => {
-                            newEntities[entity.entity_id] = entity;
-                        });
-                        this.entities = newEntities;
-                        console.log("Initial states loaded.");
-                        this.notifyListeners();
-                    }
-                } else if (data.type === 'event' && data.event.event_type === 'state_changed') {
-                    const entity_id = data.event.data.entity_id;
-                    const new_state = data.event.data.new_state;
-                    if (new_state) {
-                        // Create a new reference of entities to trigger standard HA Custom Card renders
-                        this.entities = {
-                            ...this.entities,
-                            [entity_id]: new_state
-                        };
-                        // Real-time UI update
-                        this.notifyListeners();
-                    }
-                }
-            };
-
-            this.ws.onclose = () => {
-                console.log("HA WebSocket Disconnected. Reconnecting in 5s...");
-                this.isConnected = false;
-                setTimeout(() => this.connect(), 5000);
-            };
-            
-            this.ws.onerror = (err) => console.error("HA WS Error:", err);
+                this.ws.onerror = (err) => console.error("HA WS Error:", err);
+            } catch (e) {
+                console.error("Failed to initialize WebSocket:", e);
+            }
             
         } else {
             console.log("No valid token, falling back to local mock data.");
