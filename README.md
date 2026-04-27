@@ -1,12 +1,31 @@
 # Shelly XL Lumina Dashboard
 
+> **Attribution:** This project's energy card design was forked from [Giorgio866/lumina-energy-card](https://github.com/Giorgio866/lumina-energy-card). We would like to thank the original author for their incredible work on the Lovelace card. This project modifies and adapts that work into a full, standalone HTML web dashboard specifically optimized for the Shelly Wall Display XL.
+
 A standalone, high-performance web dashboard designed specifically for the Shelly Display XL, but compatible with any tablet or kiosk browser. This dashboard preserves absolute pixel positioning for a pixel-perfect isometric 3D energy visualization and quick access to Home Assistant entities.
 
-![Dashboard Preview](assets/lumina_bg_3d.png)
+![Dashboard Preview](assets/lumina_background_nocar_real.png)
+
+## Changelog / Recent Updates
+
+### Added
+- **Interactive Battery Control Panel**: A new glassmorphism panel next to the weather widget allowing direct control of On-Grid and Off-Grid discharge cut-off limits via numeric inputs.
+- **WebSocket Write Logic**: Full integration for `set_value` and `press` services to control battery targets and trigger Quick Charge routines directly from the dashboard.
+- **Solaris-Perspective Boilerplate**: Scaffolded a new root directory (`Solaris-Perspective`) to prepare for the deployment of a native Home Assistant Custom Lovelace card version.
+
+### Changed
+- **Weather Widget Typography**: Unified weather summary, day labels, and temperature text to a strictly enforced 12px layout via CSS, replacing legacy inline styles.
+- **SOC Block Styling**: Enhanced visibility with a neon white header and dynamic color scaling for the primary SOC percentage (Green at 100%, Blue below 80%, Red below 40%).
+- **Template Sensor Integration**: Replaced complex WebSocket queries with direct, synchronous attribute reads from `sensor.pirate_weather_daily_forecast` for lightning-fast loading.
+- **Layout Density**: Tightly compressed the weather columns and battery control panels to ensure pixel-perfect fitting on the Shelly XL display without overflow.
+
+### Removed
+- **Legacy Forecast WebSocket**: Purged the deprecated `weather/get_forecasts` Promise pipeline.
 
 ## Features
 
 - **Isometric 3D Energy Flow**: Real-time visualization of Solar, Battery, Grid, and Home Load.
+- **Advanced Battery Stats**: Real-time calculation of remaining runtime and target SOC clock time.
 - **Quick Access Tiles**: One-tap access to Lights, Alarms, Pool, and Geyser.
 - **Dynamic Configuration**: Easily customize all entity IDs via a simple JavaScript file.
 - **Tablet Optimized**: Includes auto-return to home screen after inactivity.
@@ -18,8 +37,8 @@ This project operates completely differently from a standard Home Assistant Love
 
 1. **Initialization:** The browser loads `index.html` and injects your private `config.js`.
 2. **Real-Time WebSocket Pipeline:** A direct WebSocket connection is established with `http://<YOUR_HA_IP>:8123/api/websocket` using your Long-Lived Access Token.
-3. **Zero-Polling Updates:** Instead of polling the server, the app subscribes to `state_changed` events. When an inverter sensor updates (e.g., Solar power jumps from 200W to 2500W), the WebSocket catches it instantly and injects a new object reference into the UI framework.
-4. **Dynamic DOM Generation:** UI elements (Quick Tiles, Weather arrays, Room Lights) are generated entirely via JavaScript at runtime based on the parameters in your `config.js`.
+3. **Zero-Polling Updates:** Instead of polling the server, the app subscribes to `state_changed` events. When an inverter sensor updates, the WebSocket catches it instantly and updates the UI.
+4. **Dynamic DOM Generation:** UI elements are generated entirely via JavaScript at runtime based on the parameters in your `config.js`.
 
 ### Visuals & Components
 
@@ -29,39 +48,29 @@ This project operates completely differently from a standard Home Assistant Love
 
 *(Left: The raw pixel-perfect background that the live SVG flow paths animate over. Right: The custom 3D battery asset overlaid dynamically via the Lumina component.)*
 
-## Installation via HACS
+## Manual Installation
 
-1. Open **Home Assistant**.
-2. Go to **HACS** -> **Frontend**.
-3. Click the three dots in the top right corner and select **Custom repositories**.
-4. Add the URL of this repository: `https://github.com/YOUR_USERNAME/Shelly-Display-XL-Lumina-Dashboard`
-5. Select **Plugin** as the category and click **Add**.
-6. Find "Shelly XL Lumina Dashboard" in the list and click **Download**.
+To install the dashboard on your Home Assistant instance:
+
+1. **Download the ZIP**: Download the latest release or clone this repository.
+2. **Create Folder**: In your Home Assistant `/config/www/` directory, create a new folder named `ShellyDashboard`.
+3. **Copy Files**: Copy all files from this project into the `/config/www/ShellyDashboard/` folder.
+4. **Configure**: 
+   - Duplicate `config.example.js` and rename it to `config.js`.
+   - Open `config.js` and fill in your Home Assistant URL, Long-Lived Access Token, and entity IDs.
+5. **Test**: Open your browser and navigate to:
+   `http://<YOUR_HA_IP>:8123/local/ShellyDashboard/index.html`
+6. **Shelly Setup**: In your Shelly Wall Display XL settings, set the "Custom Web UI" or "Home Page" URL to the address above.
 
 ## Setup & Configuration
 
-Since this is a standalone dashboard, it requires a `config.js` file to know how to connect to your Home Assistant instance.
-
-1. Navigate to your Home Assistant `www` folder (where HACS installed the plugin).
-   Usually: `/config/www/community/Shelly-Display-XL-Lumina-Dashboard/`
-2. Duplicate `config.example.js` and rename it to `config.js`.
-3. Open `config.js` and fill in your details:
-   - `HA_URL`: Your Home Assistant IP/URL (e.g., `http://192.168.1.100:8123`).
-   - `HA_TOKEN`: A Long-Lived Access Token (generated in your HA User Profile).
-   - `ENTITIES`: Update the entity IDs to match your Home Assistant setup.
-     - **QUICK_TILES**: Configure the side-menu tiles. This is an array of objects. For each tile, you can define `id` (entity), `name`, `icon` (MDI icon class), `target` (the HTML section ID to open), `color`, and `type` (e.g., 'lights', 'pool', 'alarm').
-     - **WEATHER**: Supports Pirate Weather (or similar) sensors. You can define entities for current weather, as well as tomorrow's and the day after tomorrow's high/low temperatures and conditions.
-     - **ENERGY**: Map your inverter and battery sensors for the 3D Lumina card.
-
-## Accessing the Dashboard
-
-Once configured, you can access the dashboard via your browser at:
-
-`http://YOUR_HA_IP:8123/local/community/Shelly-Display-XL-Lumina-Dashboard/index.html`
-
-### Kiosk Mode (Recommended)
-
-For the best experience on a Shelly Display XL or tablet, use a Kiosk browser (like Fully Kiosk Browser) pointing to the URL above.
+1. **HA_URL**: Your Home Assistant IP/URL (e.g., `http://192.168.1.100:8123`).
+2. **HA_TOKEN**: A Long-Lived Access Token (generated in your HA User Profile).
+3. **ENTITIES**: Update the entity IDs to match your Home Assistant setup.
+   - **ENERGY**: Map your inverter and battery sensors.
+   - **BATTERY_CAPACITY_KWH**: Total capacity of your battery bank (default: 14kWh).
+   - **SOC_ON_GRID_TARGET**: The target SOC when the grid is connected (e.g., 50%).
+   - **SOC_OFF_GRID_TARGET**: The target SOC during loadshedding/outages (e.g., 30%).
 
 ## Privacy & Security
 

@@ -33,9 +33,9 @@ class HomeAssistantAPI {
                     this.ws.send(JSON.stringify({ id: this.msgId++, type: 'subscribe_events', event_type: 'state_changed' }));
                 } else if (data.type === 'auth_invalid') {
                     console.error("HA WebSocket Auth Invalid");
-                } else if (data.type === 'result' && data.result) {
-                    // Initial states
-                    if (Array.isArray(data.result)) {
+                } else if (data.type === 'result') {
+                    // Initial states fallback (if get_states was id: 1)
+                    if (data.id === 1 && Array.isArray(data.result)) {
                         const newEntities = {};
                         data.result.forEach(entity => {
                             newEntities[entity.entity_id] = entity;

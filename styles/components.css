@@ -1,32 +1,221 @@
 /* --- Weather Forecast Box --- */
 .weather-forecast {
     display: flex;
-    gap: var(--spacing-lg);
-    padding: var(--spacing-sm) var(--spacing-lg);
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 12px;
     border-radius: var(--border-radius);
+    min-width: unset;
+    max-width: 500px;
 }
 
-.weather-day {
+.weather-left {
+    flex: 1;
+    border-right: 1px solid rgba(255, 255, 255, 0.15);
+    padding-right: 10px;
+}
+
+.forecast-title {
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: var(--accent-hover);
+    white-space: nowrap;
+    text-transform: uppercase;
+}
+
+.weather-summary-text {
+    font-size: 12px;
+    line-height: 1.2;
+    max-width: 250px;
+    color: #FFFFFF;
+    margin-top: 4px;
+}
+
+.weather-right {
+    flex: 2;
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.forecast-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    min-width: 60px;
+    transition: transform 0.3s ease;
+}
+
+.forecast-col.is-today {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transform: scale(1.02);
+}
+
+.day-name {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.weather-icon {
+    font-size: 22px;
+    width: 22px;
+    height: 22px;
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 1rem;
-}
-
-.weather-day .mdi {
-    font-size: 1.5rem;
+    justify-content: center;
     color: var(--accent-hover);
+    margin: 2px 0;
 }
 
-.weather-day .temp {
-    font-weight: 600;
+.temp-hl {
+    font-size: 12px;
+    font-weight: 500;
+    color: white;
 }
 
-.weather-day .day {
-    color: var(--text-secondary);
-    font-size: 0.85rem;
-    text-transform: uppercase;
+.current-line {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-top: 2px;
+}
+
+/* --- Battery Control Panel --- */
+.battery-control-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 6px 12px;
+    border-radius: var(--border-radius);
+    font-size: 12px;
+    min-width: 260px;
+}
+
+.bc-header {
+    font-size: 12px;
+    font-weight: bold;
     letter-spacing: 1px;
+    color: var(--accent-hover);
+    margin-bottom: 2px;
+    text-transform: uppercase;
+}
+
+.bc-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bc-row label {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.bc-input-group {
+    display: flex;
+    gap: 6px;
+}
+
+.bc-input-group input {
+    width: 45px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 12px;
+    padding: 2px 4px;
+    font-family: inherit;
+    outline: none;
+}
+
+.bc-input-group input:focus {
+    border-color: var(--accent-color);
+}
+
+.bc-input-group input::-webkit-outer-spin-button,
+.bc-input-group input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.bc-input-group input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.bc-btn-set {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 2px 8px;
+    font-size: 11px;
+    transition: background 0.2s;
+}
+
+.bc-btn-set:hover {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.bc-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.bc-btn-charge, .bc-btn-stop {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 0;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 11px;
+    transition: opacity 0.2s;
+}
+
+.bc-btn-charge {
+    background: #10b981; /* Emerald Green */
+}
+
+.bc-btn-charge:hover {
+    opacity: 0.85;
+}
+
+.bc-btn-stop {
+    background: #ef4444; /* Red */
+}
+
+.bc-btn-stop:hover {
+    opacity: 0.85;
+}
+
+
+/* --- Flow Animations --- */
+.flow-grid-to-battery {
+    stroke-dasharray: 10 10;
+    animation: flowGridBattery 1.5s linear infinite !important;
+}
+
+@keyframes flowGridBattery {
+    0% { stroke: #39ff14; stroke-dashoffset: 40; } /* Green */
+    50% { stroke: #ff3131; } /* Red */
+    100% { stroke: #39ff14; stroke-dashoffset: 0; }
 }
 
 /* --- Lumina Energy Graphic --- */
@@ -45,6 +234,16 @@
     width: 100%;
     max-width: 600px;
     height: 350px;
+}
+
+/* --- Force-hide Legacy Lumina Elements --- */
+[data-role="battery-soc"],
+[data-role="battery-power"],
+[data-role^="battery-soc-"],
+[data-role^="battery-power-"],
+[data-role="title-text"] {
+    display: none !important;
+    opacity: 0 !important;
 }
 
 .flow-svg {
@@ -85,6 +284,16 @@
 @keyframes flowAnimReverse {
     from { stroke-dashoffset: 0; }
     to { stroke-dashoffset: 20; }
+}
+
+@keyframes neonPulse {
+    0% { opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
+    50% { opacity: 0.7; filter: drop-shadow(0 0 15px currentColor); }
+    100% { opacity: 1; filter: drop-shadow(0 0 8px currentColor); }
+}
+
+.neon-pulse {
+    animation: neonPulse 1.5s ease-in-out infinite;
 }
 
 /* 3D Isometric Mode */
@@ -138,10 +347,27 @@
 }
 
 /* Specific Positions (Using Percentages for Responsive Scaling) */
-.solar-box { top: 10%; left: 5%; }
+.solar-box { 
+    top: calc(10% - 20px); /* Moved UP exactly 30px from previous +10px position */
+    left: 5%; 
+    font-size: 0.75rem; 
+}
+.solar-box .box-title { font-size: 0.8rem; }
+.solar-box .highlight { font-size: 1.05rem; }
+
 .grid-box { top: 10%; left: 35%; }
-.battery-box { bottom: 15%; left: 15%; }
-.battery-box .box-title { font-size: 1.5rem; text-align: center; border: none; }
+.battery-box { 
+    bottom: calc(-3% + 30px); /* Moved UP 30px */
+    left: 54%;   /* Moved RIGHT from 50% */
+    transform: translateX(-50%);
+    min-width: 190px; /* Reduced min-width to accommodate smaller fonts */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    padding: 0;
+}
+.battery-box .box-title { font-size: 1.2rem; text-align: center; border: none; }
 .house-box { top: 50%; right: 5%; color: white; box-shadow: 0 0 15px rgba(0, 240, 255, 0.3); }
 .house-box .box-title { border-color: rgba(0, 240, 255, 0.3); }
 

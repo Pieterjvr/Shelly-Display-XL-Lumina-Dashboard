@@ -24,21 +24,50 @@
             <!-- Energy / Home View -->
             <section id="energy-view" class="view-section active">
                 <header class="view-header">
-                    <div class="weather-forecast glass-panel" id="weather-box">
-                        <div class="weather-day">
-                            <span class="mdi mdi-weather-partly-cloudy"></span>
-                            <span class="temp">24°</span>
-                            <span class="day">Today</span>
+                    <div style="display: flex; gap: 10px; align-items: stretch;">
+                        <div class="weather-forecast glass-panel" id="weather-box">
+                            <div class="weather-day">
+                                <span class="mdi mdi-weather-partly-cloudy"></span>
+                                <span class="temp">24°</span>
+                                <span class="day">Today</span>
+                            </div>
+                            <div class="weather-day">
+                                <span class="mdi mdi-weather-sunny"></span>
+                                <span class="temp">26°</span>
+                                <span class="day">Tomorrow</span>
+                            </div>
+                            <div class="weather-day">
+                                <span class="mdi mdi-weather-pouring"></span>
+                                <span class="temp">18°</span>
+                                <span class="day">Friday</span>
+                            </div>
                         </div>
-                        <div class="weather-day">
-                            <span class="mdi mdi-weather-sunny"></span>
-                            <span class="temp">26°</span>
-                            <span class="day">Tomorrow</span>
-                        </div>
-                        <div class="weather-day">
-                            <span class="mdi mdi-weather-pouring"></span>
-                            <span class="temp">18°</span>
-                            <span class="day">Friday</span>
+                        
+                        <div class="battery-control-panel glass-panel" id="battery-control-box">
+                            <div class="bc-header">BATTERY CONTROL</div>
+                            <div class="bc-row">
+                                <label>On-Grid Cut-off</label>
+                                <div class="bc-input-group">
+                                    <input type="number" id="bc-on-grid-input" min="0" max="100">
+                                    <button class="bc-btn-set" id="bc-on-grid-set">Set</button>
+                                </div>
+                            </div>
+                            <div class="bc-row">
+                                <label>Off-Grid Cut-off</label>
+                                <div class="bc-input-group">
+                                    <input type="number" id="bc-off-grid-input" min="0" max="100">
+                                    <button class="bc-btn-set" id="bc-off-grid-set">Set</button>
+                                </div>
+                            </div>
+                            <div class="bc-actions">
+                                <button class="bc-btn-charge" id="bc-quick-charge">
+                                    <span class="mdi mdi-lightning-bolt"></span>
+                                    <span style="text-align: center; line-height: 1.1;">Quick Charge<br>(3 Hrs)</span>
+                                </button>
+                                <button class="bc-btn-stop" id="bc-stop-charge">
+                                    <span class="mdi mdi-stop"></span> Stop Quick Charge
+                                </button>
+                            </div>
                         </div>
                     </div>
                     <div class="time-display" id="clock">--:--</div>
@@ -47,8 +76,68 @@
                 <div class="energy-dashboard-grid side-by-side">
 
                     <!-- Lumina 3D Isometric Energy Graphic (Left) -->
-                    <div class="card glass-panel lumina-card-container">
+                    <div class="card glass-panel lumina-card-container" style="position: relative;">
                         <lumina-energy-card id="lumina-card"></lumina-energy-card>
+
+                        <!-- Floating Data Overlays -->
+                        <div class="floating-box solar-box" id="solar-data-box">
+                            <div class="box-title">Daily Solar Usage</div>
+                            <div class="box-row">
+                                <span class="highlight" id="solar-current">0 W</span>
+                            </div>
+                            <div class="box-row">
+                                <span id="solar-daily">0 kWh</span>
+                            </div>
+                        </div>
+
+                        <!-- Glowing Lightning Bolt inside the Battery Asset -->
+                        <div id="battery-bolt"
+                            style="position: absolute; left: calc(37.5% - 50px); top: calc(69% + 12px); transform: translate(-50%, -50%) rotate(1deg); width: 35px; height: 35px; z-index: 15; pointer-events: none; color: #39ff14;">
+                            <svg viewBox="0 0 24 24"
+                                style="width: 100%; height: 100%; filter: drop-shadow(0 0 8px currentColor);">
+                                <path fill="currentColor" d="M11,21.99V14H6.5L13,2.01V10H17.5L11,21.99Z" />
+                            </svg>
+                        </div>
+
+                        <!-- Battery Capacity Stored (Isometric Style) -->
+                        <div id="battery-capacity-stored"
+                            style="position: absolute; left: calc(37.5% - 100px); top: calc(69% + 60px); transform: rotate(23deg); font-size: 0.65rem; color: #00f0ff; font-weight: bold; z-index: 14; pointer-events: none; text-shadow: 0 0 5px rgba(0, 240, 255, 0.5); white-space: nowrap;">
+                            0.00 / 14.00 kWh
+                        </div>
+
+                        <div class="floating-box battery-box" id="battery-data-box">
+                            <div class="battery-row-1"
+                                style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; margin-bottom: 4px;">
+                                <div style="font-size: 1.33rem; font-weight: bold; flex: 1; text-align: left;"
+                                    id="battery-soc">0%</div>
+                                <div
+                                    style="width: 2px; height: 30px; background: rgba(255,255,255,0.2); margin: 0 10px;">
+                                </div>
+                                <div
+                                    style="display: flex; flex-direction: column; font-size: 12px; opacity: 0.8; flex: 1; text-align: left;">
+                                    <div style="font-weight: bold; margin-bottom: 2px; color: #ffffff; text-shadow: 0 0 5px #ffffff;">SOC</div>
+                                    <div id="battery-target-on">On-Grid: --%</div>
+                                    <div id="battery-target-off">Off-Grid: --%</div>
+                                </div>
+                            </div>
+                            <div class="battery-row-2"
+                                style="display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 2px;">
+                                <div style="font-size: 0.75rem; font-weight: bold; opacity: 0.95; text-transform: uppercase;"
+                                    id="battery-status">Idle</div>
+                                <div style="font-weight: bold; font-size: 0.85rem; text-align: right;"
+                                    id="battery-rate">0.00 kW</div>
+                            </div>
+                            <div class="battery-row-3" id="battery-row-3"
+                                style="display: flex; justify-content: flex-start; margin-bottom: 2px;">
+                                <div style="font-size: 0.83rem; font-weight: bold; opacity: 0.95; text-align: left;"
+                                    id="battery-remaining">--h --m</div>
+                            </div>
+                            <div class="battery-row-4" id="battery-row-4"
+                                style="text-align: left; font-size: 0.47rem; opacity: 0.7; letter-spacing: 0.5px; text-transform: uppercase; height: 12px; margin-top: 2px;"
+                                id="battery-target">
+                                Runtime to --% @ --:--
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Quick Access Tiles (Right, Vertical) -->
