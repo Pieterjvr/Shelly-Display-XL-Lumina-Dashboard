@@ -1,0 +1,11 @@
+{
+  "name": "solaris-perspective",
+  "version": "1.0.0",
+  "description": "A custom Lovelace card for Home Assistant, migrating the standalone Shelly Dashboard into a native card component.",
+  "main": "src/solaris-perspective-card.js",
+  "scripts": {
+    "build": "echo 'Build script not configured yet'"
+  },
+  "author": "",
+  "license": "MIT"
+}
