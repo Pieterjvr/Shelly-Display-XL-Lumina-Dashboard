@@ -6,6 +6,19 @@ A standalone, high-performance web dashboard designed specifically for the Shell
 
 ![Dashboard Preview](assets/lumina_background_nocar_real.png)
 
+## Shelly Wall Display & Android WebView Compatibility
+
+![Shelly Display](ShellyDisplay.png)
+
+This dashboard has been specifically engineered to overcome the limitations of the legacy Android Chromium WebView found on the Shelly Wall Display.
+
+- **Network/mDNS Limitations**: Android WebView often fails to resolve `.local` addresses (like `homeassistant.local`). You **must** use the static IP address of your Home Assistant instance in `config.js` for the WebSocket connection.
+- **Offline-First Architecture**: Designed for isolated IoT networks. All assets, including fonts (Inter, Exo 2, Orbitron) and libraries (GSAP), are hosted locally within the `/styles/fonts/` and `/scripts/` directories. This prevents the dashboard from hanging on networks without internet access.
+- **Aggressive Caching**: Android WebViews cache assets heavily. When pushing updates, always use a cache-busting query string in your URL (e.g., `index.html?v=3`) to force the display to load the latest files.
+- **UI Scaling & Flexbox**:
+    - **Flexbox Fixes**: Applied `flex-shrink: 0;` to top-level widgets to prevent them from being crushed by Android's viewport calculation.
+    - **Scaling**: The `scaleDashboard()` function uses `transform-origin: top left` and `document.documentElement.clientWidth` to ensure the 3D isometric view fits the 1280x696 usable space perfectly without clipping or off-screen rendering.
+
 ## Changelog / Recent Updates
 
 ### Added
@@ -21,6 +34,10 @@ A standalone, high-performance web dashboard designed specifically for the Shell
 
 ### Removed
 - **Legacy Forecast WebSocket**: Purged the deprecated `weather/get_forecasts` Promise pipeline.
+
+### Fixed
+- **Shelly Panel Scaling**: Implemented a master CSS scaling wrapper (`#dashboard-wrapper`) to dynamically fit the strict 1280x696 Shelly panel viewport without overlapping elements or relying on standard media queries that break absolute positioning.
+- **Legacy WebView Compatibility**: Removed modern JavaScript syntax (like Optional Chaining `?.` and Nullish Coalescing `??`) and added robust `try/catch` error handling around the WebSocket connection to prevent silent WebView crashes on legacy Android panels.
 
 ## Features
 

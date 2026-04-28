@@ -889,33 +889,7 @@ const __URL_GOOGLE_FONTS_ALL = 'https://fonts.googleapis.com/css2'
   + '&display=swap';
 
 /** Google Fonts: load from document.head. Shadow <link>/@import is often ignored or blocked for @font-face; HA dashboards usually allow top-level stylesheets. */
-const ensureLuminaGoogleFontsInDocument_ = () => {
-  try {
-    const w = typeof window !== 'undefined' ? window : null;
-    const doc = typeof document !== 'undefined' ? document : null;
-    if (!w || !doc || !doc.head) return;
-    const LINK_ID = 'lumina-energy-card-google-fonts-css';
-    if (w.__LUMINA_GOOGLE_FONTS_HEAD__ || doc.getElementById(LINK_ID)) {
-      w.__LUMINA_GOOGLE_FONTS_HEAD__ = true;
-      return;
-    }
-    const preG = doc.createElement('link');
-    preG.rel = 'preconnect';
-    preG.href = 'https://fonts.googleapis.com';
-    doc.head.appendChild(preG);
-    const preS = doc.createElement('link');
-    preS.rel = 'preconnect';
-    preS.href = 'https://fonts.gstatic.com';
-    preS.crossOrigin = 'anonymous';
-    doc.head.appendChild(preS);
-    const css = doc.createElement('link');
-    css.id = LINK_ID;
-    css.rel = 'stylesheet';
-    css.href = __URL_GOOGLE_FONTS_ALL;
-    doc.head.appendChild(css);
-    w.__LUMINA_GOOGLE_FONTS_HEAD__ = true;
-  } catch (e) { /* ignore */ }
-};
+const ensureLuminaGoogleFontsInDocument_ = () => { /* Disabled for offline mode */ };
 
 const resolveLuminaHiTechBodyFont = (config) => {
   let idx = Number(config && config.hi_tech_font_preset);
@@ -3559,121 +3533,11 @@ class LuminaEnergyCard extends HTMLElement {
   }
 
   _ensureGsap() {
-    if (this._gsap) {
+    if (typeof window !== "undefined" && window.gsap) {
+      this._gsap = window.gsap;
       return Promise.resolve(this._gsap);
     }
-    if (this._gsapLoading) {
-      return this._gsapLoading;
-    }
-
-    const moduleCandidates = [
-      __URL_GSAP_ESM_1,
-      __URL_GSAP_ESM_2
-    ];
-    const scriptCandidates = [
-      __URL_GSAP_UMD_1,
-      __URL_GSAP_UMD_2
-    ];
-
-    const resolveCandidate = (module) => {
-      const candidate = module && (module.gsap || module.default || module);
-      if (candidate && typeof candidate.to === 'function') {
-        this._gsap = candidate;
-        return this._gsap;
-      }
-      if (typeof window !== 'undefined' && window.gsap && typeof window.gsap.to === 'function') {
-        this._gsap = window.gsap;
-        return this._gsap;
-      }
-      throw new Error('Lumina Energy Card: GSAP module missing expected exports');
-    };
-
-    const ensureGlobalGsap = () => {
-      if (typeof window !== 'undefined' && window.gsap && typeof window.gsap.to === 'function') {
-        this._gsap = window.gsap;
-        return this._gsap;
-      }
-      throw new Error('Lumina Energy Card: GSAP global not available after script load');
-    };
-
-    const attemptModuleLoad = (index) => {
-      if (index >= moduleCandidates.length) {
-        return Promise.reject(new Error('Lumina Energy Card: module imports exhausted'));
-      }
-      return import(moduleCandidates[index])
-        .then(resolveCandidate)
-        .catch((error) => {
-          return attemptModuleLoad(index + 1);
-        });
-    };
-
-    const loadScript = (url) => {
-      if (typeof document === 'undefined') {
-        return Promise.reject(new Error('Lumina Energy Card: document not available for GSAP script load'));
-      }
-
-      const existing = document.querySelector(`script[data-lumina-gsap="${url}"]`);
-      if (existing && existing.dataset.loaded === 'true') {
-        try {
-          return Promise.resolve(ensureGlobalGsap());
-        } catch (err) {
-          return Promise.reject(err);
-        }
-      }
-      if (existing) {
-        return new Promise((resolve, reject) => {
-          existing.addEventListener('load', () => {
-            try {
-              resolve(ensureGlobalGsap());
-            } catch (err) {
-              reject(err);
-            }
-          }, { once: true });
-          existing.addEventListener('error', (event) => reject(event?.error || new Error(`Lumina Energy Card: failed to load GSAP script ${url}`)), { once: true });
-        });
-      }
-
-      return new Promise((resolve, reject) => {
-        const script = document.createElement('script');
-        script.src = url;
-        script.async = true;
-        script.dataset.luminaGsap = url;
-        script.addEventListener('load', () => {
-          script.dataset.loaded = 'true';
-          try {
-            resolve(ensureGlobalGsap());
-          } catch (err) {
-            reject(err);
-          }
-        }, { once: true });
-        script.addEventListener('error', (event) => {
-          script.dataset.loaded = 'error';
-          reject(event?.error || new Error(`Lumina Energy Card: failed to load GSAP script ${url}`));
-        }, { once: true });
-        document.head.appendChild(script);
-      });
-    };
-
-    const attemptScriptLoad = (index) => {
-      if (index >= scriptCandidates.length) {
-        return Promise.reject(new Error('Lumina Energy Card: script fallbacks exhausted'));
-      }
-      return loadScript(scriptCandidates[index])
-        .catch((error) => {
-          return attemptScriptLoad(index + 1);
-        });
-    };
-
-    this._gsapLoading = attemptScriptLoad(0)
-      .catch((scriptError) => {
-        return attemptModuleLoad(0);
-      })
-      .catch((error) => {
-        this._gsapLoading = null;
-        throw error;
-      });
-
-    return this._gsapLoading;
+    return Promise.reject(new Error("GSAP not loaded locally"));
   }
 
   _syncFlowAnimation(flowKey, element, seconds, flowState) {

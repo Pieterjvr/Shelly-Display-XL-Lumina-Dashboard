@@ -6,12 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Home Assistant Dashboard</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/materialdesignicons.min.css?v=3">
+    <link rel="stylesheet" href="styles/fonts/inter.css?v=3">
+    <link rel="stylesheet" href="styles/fonts/lumina.css?v=3">
 
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/layout.css">
-    <link rel="stylesheet" href="styles/components.css">
+    <link rel="stylesheet" href="styles/main.css?v=3">
+    <link rel="stylesheet" href="styles/layout.css?v=3">
+    <link rel="stylesheet" href="styles/components.css?v=3">
 </head>
 
 <body class="dark-theme">
@@ -134,8 +135,7 @@
                                     id="battery-remaining">--h --m</div>
                             </div>
                             <div class="battery-row-4" id="battery-row-4"
-                                style="text-align: left; font-size: 0.47rem; opacity: 0.7; letter-spacing: 0.5px; text-transform: uppercase; height: 12px; margin-top: 2px;"
-                                id="battery-target">
+                                style="text-align: left; font-size: 0.59rem; opacity: 0.7; letter-spacing: 0.5px; text-transform: uppercase; height: 14px; margin-top: 2px;">
                                 Runtime to --% @ --:--
                             </div>
                         </div>
@@ -214,11 +214,12 @@
         </main>
     </div>
 
-    <script src="config.js"></script>
-    <script src="scripts/lumina-card.js"></script>
-    <script src="scripts/ha-api.js"></script>
-    <script src="scripts/ui.js"></script>
-    <script src="scripts/app.js"></script>
+    <script src="config.js?v=3"></script>
+    <script src="scripts/gsap.min.js?v=3"></script>
+    <script src="scripts/lumina-card.js?v=3"></script>
+    <script src="scripts/ha-api.js?v=3"></script>
+    <script src="scripts/ui.js?v=3"></script>
+    <script src="scripts/app.js?v=3"></script>
 </body>
 
 </html>
