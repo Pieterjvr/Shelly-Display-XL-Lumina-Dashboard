@@ -116,4 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
             ui.updateClock();
         }
     }, 1000 * 30); // 30 seconds update loop for clock
+
+    // Auto-refresh the dashboard every 5 minutes
+    setTimeout(() => {
+        console.log("5 minute refresh triggered.");
+        window.location.reload();
+    }, 5 * 60 * 1000);
 });

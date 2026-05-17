@@ -21,6 +21,9 @@ This dashboard has been specifically engineered to overcome the limitations of t
 
 ## Changelog / Recent Updates
 
+### [v1.0.4] - Kiosk Stability Update
+- **Auto-Refresh Mechanism:** Implemented a hard 5-minute (`window.location.reload()`) refresh interval to the main application loop. This guarantees long-term stability on Android WebViews (like the Shelly Display) by preventing memory leaks and ensuring the WebSocket connection never goes permanently stale during extended uptime.
+
 ### [v1.0.3] - Dynamic Alarm Panel & Stay Zones
 - **Custom Stay Zones:** Added the ability to define specific `button` entities for custom alarm zones (e.g., Doors, Bar Doors, Bar, Sleep) directly in `config.js`.
 - **Dynamic Alarm Layouts:** The Alarm Panel UI now automatically adapts its layout. If a panel (like "House") has custom zones, it renders a sleek 2x2 grid. If it has no zones (like "Flat"), it seamlessly falls back to standard Arm Away / Disarm buttons.
