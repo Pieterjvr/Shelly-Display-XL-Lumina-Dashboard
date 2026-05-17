@@ -75,7 +75,7 @@ class UI {
                 div.id = `alarm-${name}-container`;
                 div.className = 'alarm-panel glass-panel';
                 alarmsContainer.appendChild(div);
-                this.renderAlarmPanel(name, div.id, alarm.id);
+                this.renderAlarmPanel(alarm, div.id);
             });
         }
 
@@ -332,24 +332,47 @@ class UI {
         });
     }
 
-    renderAlarmPanel(name, containerId, entityId) {
+    renderAlarmPanel(alarm, containerId) {
         const container = document.getElementById(containerId);
         if (!container) return;
+        
+        const stayZones = alarm.zones || [];
+        const entityId = alarm.id;
+        const name = alarm.name.toLowerCase();
+        
+        let zonesHtml = '';
+        if (stayZones.length > 0) {
+            zonesHtml = `
+            <div class="alarm-zones-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-sm); margin-bottom: var(--spacing-sm);">
+                ${stayZones.map(zone => {
+                    const domain = zone.domain || 'alarm_control_panel';
+                    const service = zone.service || 'alarm_arm_home';
+                    const targetEntity = zone.target_entity || entityId;
+                    return `
+                    <button class="alarm-btn stay-zone-btn" onclick="window.ha.callService('${domain}', '${service}', {entity_id: '${targetEntity}'})">
+                        <span class="mdi ${zone.icon}"></span>
+                        <span style="font-size: 1rem; margin-top: 4px;">${zone.name}</span>
+                    </button>
+                    `;
+                }).join('')}
+            </div>
+            `;
+        }
         
         container.innerHTML = `
             <div class="alarm-header">
                 <div class="alarm-status" id="alarm-status-${name}">
                     <span class="mdi mdi-lock-outline"></span>
-                    <span id="alarm-text-${name}">${name.toUpperCase()}</span>
+                    <span id="alarm-text-${name}">${alarm.name.toUpperCase()}</span>
                 </div>
             </div>
-            <div class="alarm-actions">
+            <div class="alarm-actions" style="grid-template-columns: 1fr; margin-bottom: var(--spacing-sm);">
                 <button class="alarm-btn arm-away" onclick="window.ha.callService('alarm_control_panel', 'alarm_arm_away', {entity_id: '${entityId}'})">
                     <span class="mdi mdi-shield-lock-outline"></span> Arm Away
                 </button>
-                <button class="alarm-btn arm-stay" onclick="window.ha.callService('alarm_control_panel', 'alarm_arm_home', {entity_id: '${entityId}'})">
-                    <span class="mdi mdi-shield-home-outline"></span> Arm Stay
-                </button>
+            </div>
+            ${zonesHtml}
+            <div class="alarm-actions" style="grid-template-columns: 1fr;">
                 <button class="alarm-btn disarm" onclick="window.ha.callService('alarm_control_panel', 'alarm_disarm', {entity_id: '${entityId}'})">
                     <span class="mdi mdi-shield-lock-open-outline"></span> Disarm
                 </button>
@@ -404,11 +427,18 @@ class UI {
                     const textEl = document.getElementById(`alarm-text-${name}`);
                     if (!statusEl || !textEl) return;
 
-                    const isDisarmed = entity.state.toLowerCase() === 'disarmed';
+                    const statusSensor = alarm.status_sensor ? entities[alarm.status_sensor] : null;
+                    const isDisarmedText = statusSensor ? statusSensor.state.toLowerCase() === 'disarmed' : false;
+                    const isDisarmed = entity.state.toLowerCase() === 'disarmed' || isDisarmedText;
                     
                     statusEl.className = `alarm-status ${isDisarmed ? 'disarmed' : 'armed'}`;
                     statusEl.querySelector('.mdi').className = `mdi ${isDisarmed ? 'mdi-lock-open-outline' : 'mdi-lock-outline'}`;
-                    textEl.textContent = `${alarm.name.toUpperCase()} - ${entity.state}`;
+                    
+                    let displayState = entity.state;
+                    if (statusSensor && statusSensor.state) {
+                        displayState = statusSensor.state;
+                    }
+                    textEl.textContent = `${alarm.name.toUpperCase()} - ${displayState}`;
                 }
             });
         }
@@ -520,6 +550,33 @@ class UI {
                 }
             } else if (tile.type === 'pool') {
                 displayText = entity.state === 'on' ? 'Pump Running' : 'Idle';
+                el.style.display = 'block';
+            } else if (tile.type === 'alarm') {
+                const alarmConfig = (this.config.ALARMS || []).find(a => a.id === tile.id) || {};
+                const statusSensor = alarmConfig.status_sensor ? entities[alarmConfig.status_sensor] : null;
+                const isDisarmedText = statusSensor ? statusSensor.state.toLowerCase() === 'disarmed' : false;
+                const isDisarmed = entity.state.toLowerCase() === 'disarmed' || isDisarmedText;
+                
+                if (!isDisarmed) {
+                    if (statusSensor && statusSensor.state) {
+                        displayText = statusSensor.state;
+                    } else {
+                        const mappedZone = (alarmConfig.zones || []).find(z => (z.service || '').replace('alarm_arm_', 'armed_') === entity.state.toLowerCase());
+                        displayText = mappedZone ? `Armed - ${mappedZone.name}` : `Armed - ${entity.state.replace('armed_', '')}`;
+                    }
+                } else {
+                    displayText = 'Disarmed';
+                }
+                
+                const container = el.closest('.quick-tile');
+                const iconEl = container ? container.querySelector('.tile-icon') : null;
+                if (iconEl) {
+                    if (isDisarmed) {
+                        iconEl.style.color = '#10b981'; // Green
+                    } else {
+                        iconEl.style.color = '#ef4444'; // Red
+                    }
+                }
                 el.style.display = 'block';
             } else {
                 el.style.display = 'block';

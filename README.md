@@ -21,6 +21,12 @@ This dashboard has been specifically engineered to overcome the limitations of t
 
 ## Changelog / Recent Updates
 
+### [v1.0.3] - Dynamic Alarm Panel & Stay Zones
+- **Custom Stay Zones:** Added the ability to define specific `button` entities for custom alarm zones (e.g., Doors, Bar Doors, Bar, Sleep) directly in `config.js`.
+- **Dynamic Alarm Layouts:** The Alarm Panel UI now automatically adapts its layout. If a panel (like "House") has custom zones, it renders a sleek 2x2 grid. If it has no zones (like "Flat"), it seamlessly falls back to standard Arm Away / Disarm buttons.
+- **Real-Time Custom Status Sync:** The dashboard now natively hooks into custom status sensors (like `sensor.house_house_armed_status`) to accurately display specific armed profiles across both the Alarm Panel header and the Homepage Quick Tile.
+- **Dynamic Homepage Styling:** The Alarm Quick Tile now intelligently updates its color (Green for Disarmed, Red for Armed) and text based on the active zone profile.
+
 ### Added
 - **Interactive Battery Control Panel**: A new glassmorphism panel next to the weather widget allowing direct control of On-Grid and Off-Grid discharge cut-off limits via numeric inputs.
 - **WebSocket Write Logic**: Full integration for `set_value` and `press` services to control battery targets and trigger Quick Charge routines directly from the dashboard.
