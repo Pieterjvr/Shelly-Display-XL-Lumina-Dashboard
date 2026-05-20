@@ -21,6 +21,9 @@ This dashboard has been specifically engineered to overcome the limitations of t
 
 ## Changelog / Recent Updates
 
+### [v1.0.5] - Alarm Entity Fixes
+- **Bar Doors Entity Typo:** Fixed a configuration typo for the House alarm panel where the `Bar Doors` stay zone was mapping to a singular `door` entity instead of the correct `button.house_house_arm_bar_doors` plural entity.
+
 ### [v1.0.4] - Kiosk Stability Update
 - **Auto-Refresh Mechanism:** Implemented a hard 5-minute (`window.location.reload()`) refresh interval to the main application loop. This guarantees long-term stability on Android WebViews (like the Shelly Display) by preventing memory leaks and ensuring the WebSocket connection never goes permanently stale during extended uptime.
 
